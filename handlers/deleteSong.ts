@@ -1,4 +1,4 @@
-import { deleteSong, getSong } from "../services/songs.ts";
+import { deleteSong, getSongById } from "../services/songs.ts";
 
 export default async ({ params, response }) => {
   const songId = params.id;
@@ -9,8 +9,8 @@ export default async ({ params, response }) => {
     return;
   }
 
-  const foundSong = await getSong(songId);
-  if (!foundSong) {
+  const foundSong = await getSongById(songId);
+  if (foundSong.length < 0) {
     response.status = 404;
     response.body = { msg: `Song with ID ${songId} not found` };
     return;

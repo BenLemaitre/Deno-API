@@ -1,21 +1,17 @@
-import { fetchData, persistData } from "../db/db.ts";
+import { fetchData, persistData, updateData, deleteData } from "../db/db.ts";
 import { Song } from "../models/song.ts";
 
 type SongData = Pick<Song, "title" | "artist" | "genre" | "year">;
+const table = "songs";
 
 export const getSongs = async (): Promise<Song[]> => {
-
-  return [];
+  const songs = await fetchData(table, []);
+  return songs;
 };
 
-export const getSong = async (songId: number): Promise<Song | undefined> => {
-  let song = {
-    id: 1,
-    title: "test",
-    artist: "artist",
-    genre: "Russian Doomer",
-    year: 2019
-  };
+export const getSongById = async (songId: number): Promise<Song[] | undefined> => {
+  let params = ["id", songId];
+  const song = await fetchData(table, params);
 
   return song;
 };
@@ -34,11 +30,17 @@ export const createSong = async (songData: SongData): Promise<string> => {
   return newSong.title;
 };
 
-export const updateSong = async (songId: number, songData: SongData
-): Promise<void> => {
+export const updateSong = async (songId: number, songData: SongData): Promise<void> => {
+  const song = {
+    title: String(songData.title),
+    artist: String(songData.artist),
+    genre: String(songData.genre),
+    year: Number(songData.year)
+  };
 
+  await updateData(table, songId, song);
 };
 
 export const deleteSong = async (songId: number): Promise<void> => {
-  
+  await deleteData(table, songId);
 };
