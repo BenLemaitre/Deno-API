@@ -19,27 +19,36 @@ export const fetchData = async (table: string, params:any): Promise<[]> => {
 
   const data = await client.query(query, params);
   return data;
-};
+}
 
-export const persistData = async (data: any): Promise<void> => {
-  let result = await client.execute(`INSERT INTO songs (title, artist, genre, year) values(?, ?, ?, ?)`, [
-    data.title, data.artist, data.genre, data.year
-  ]);
-};
+export const persistData = async (table: string, data: object): Promise<void> => {
+  let query = `insert into ${table} ({0}) values({1})`;
+  let values = '?,';
+  let fields = Object.keys(data);
+  let params = Object.values(data);
+  
+  values = values.repeat(fields.length);
+  // remove last ','
+  values = values.substring(0, values.length -1);
+  
+  query = query.replace('{0}', fields.join(','));
+  query = query.replace('{1}', values);
+
+  let result = await client.execute(query, params);
+}
 
 export const updateData = async (table: string, id: number, data: object): Promise<void> => {
-  let query = `update ${table} set `
+  let query = `update ${table} set {0} where id = ${id}`
+  let fields = `?? = ?,`;
   let params = [];
 
   for (let key in data) {
-    query += ` ?? = ?,`;
     params.push(key, data[key]);
   }
 
-  // remove last ','
-  query = query.substring(0, query.length -1);
-  query += ` where id = ${id}`;
-
+  fields = fields.repeat(Object.keys(data).length);
+  fields = fields.substring(0, fields.length -1);
+  query = query.replace('{0}', fields);
   let result = await client.execute(query, params);
 }
 

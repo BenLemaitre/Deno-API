@@ -18,14 +18,13 @@ export const getSongById = async (songId: number): Promise<Song[] | undefined> =
 
 export const createSong = async (songData: SongData): Promise<string> => {
   const newSong: Song = {
-    id: 0,
     title: String(songData.title),
     artist: String(songData.artist),
     genre: String(songData.genre),
     year: Number(songData.year)
   };
 
-  await persistData(newSong);
+  await persistData(table, newSong);
 
   return newSong.title;
 };
